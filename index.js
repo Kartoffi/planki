@@ -28,7 +28,7 @@ for (const folder of commandFolders) {
     .readdirSync(commandsPath)
     .filter((file) => file.endsWith(".js"));
   for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
+    const filePath = path.resolve(commandsPath, file);
     const command = await import(pathToFileURL(filePath).href);
     // Füge die Befehle zur Collection hinzu
     if ("data" in command && "execute" in command) {
@@ -65,7 +65,7 @@ const eventFiles = fs
   .filter((file) => file.endsWith(".js"));
 
 for (const file of eventFiles) {
-  const filePath = path.join(eventsPath, file);
+  const filePath = path.resolve(eventsPath, file);
   const event = await import(pathToFileURL(filePath).href);
   bot.on(event.name, (...args) => event.execute(...args));
 }
