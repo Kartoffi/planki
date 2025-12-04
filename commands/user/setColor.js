@@ -3,7 +3,7 @@ import { db } from '../../database.js';
 
 export const data = new SlashCommandBuilder()
   .setName('setcolor')
-  .setDescription('Setze eine neue Farbe.')
+  .setDescription('Setze eine neue Farbe oder benenne deine Farbrolle um.')
   .addStringOption(option =>
     option.setName('hexcode')
       .setDescription('Hex-Code der Farbe, z.B. #ff0000')
@@ -11,7 +11,7 @@ export const data = new SlashCommandBuilder()
   )
   .addStringOption(option =>
     option.setName('name')
-      .setDescription('Name der Farbrolle (optional)')
+      .setDescription('Name der Farbrolle')
       .setRequired(false)
   );
 
@@ -75,7 +75,7 @@ export async function execute(interaction) {
     } else {
       // User has no color role yet
       if (!hasColor) {
-        return interaction.reply({ content: 'Um eine neue Farbrolle zu erstellen, musst du eine Farbe angeben.', flags: 64 });
+        return interaction.reply({ content: 'Du hattest zuvor noch keine Farbrolle. Um eine neue Farbrolle zu erstellen, ist es erforderlich einen Hex-Code anzugeben.', flags: 64 });
       }
       // Create new role
       const createData = {
@@ -105,6 +105,6 @@ export async function execute(interaction) {
     await interaction.reply({ content: replyMsg, flags: 64 });
   } catch (error) {
     console.error(error);
-    await interaction.reply({ content: `Fehler beim Setzen der Farbrolle.`, flags: 64 });
+    await interaction.reply({ content: `Fehler beim Setzen der Farbrolle. Bitte gebe den Admins bescheid, dass etwas schiefgelaufen ist.`, flags: 64 });
   }
 }
