@@ -1,6 +1,8 @@
 import { bot } from "./client.js"; // Importiere den Bot-Client aus client.js
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "url";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Importiere die notwendigen discord.js Klassen
 import { REST, Routes, Events, Collection } from "discord.js";
@@ -17,7 +19,7 @@ const commands = [];
 bot.commands = new Collection();
 
 // Lese die Befehl-Ordner und füge die Befehle zur Collection hinzu
-const foldersPath = path.join(path.dirname(new URL(import.meta.url).pathname), "commands");
+const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 for (const folder of commandFolders) {
@@ -57,7 +59,7 @@ const rest = new REST().setToken(process.env.BOT_TOKEN);
 })();
 
 // Lese und registriere die Events
-const eventsPath = path.join(path.dirname(new URL(import.meta.url).pathname), "events");
+const eventsPath = path.join(__dirname, "events");
 const eventFiles = fs
   .readdirSync(eventsPath)
   .filter((file) => file.endsWith(".js"));
