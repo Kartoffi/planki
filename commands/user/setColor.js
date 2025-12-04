@@ -48,8 +48,10 @@ export async function execute(interaction) {
         const editData = {};
         if (hasColor) editData.color = color;
         if (hasName) editData.name = roleName;
-        // Set position to top (highest position)
-        editData.position = guild.roles.cache.size - 1;
+          // Set position directly under the bot's highest role
+          const botMember = guild.members.me;
+          const botHighestRole = botMember.roles.highest;
+          editData.position = botHighestRole.position - 1 > 0 ? botHighestRole.position - 1 : 1;
         await role.edit(editData);
       } else {
         // Role not found, create new
@@ -59,7 +61,10 @@ export async function execute(interaction) {
           reason: `Farbrolle für ${interaction.user.tag}`
         };
         if (hasColor) createData.color = color;
-        createData.position = guild.roles.cache.size - 1;
+          // Create role directly under the bot's highest role
+          const botMember = guild.members.me;
+          const botHighestRole = botMember.roles.highest;
+          createData.position = botHighestRole.position - 1 > 0 ? botHighestRole.position - 1 : 1;
         role = await guild.roles.create(createData);
         await member.roles.add(role);
         // Update role id in database
