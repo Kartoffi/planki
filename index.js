@@ -1,7 +1,7 @@
 import { bot } from "./client.js"; // Importiere den Bot-Client aus client.js
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Importiere die notwendigen discord.js Klassen
@@ -29,7 +29,7 @@ for (const folder of commandFolders) {
     .filter((file) => file.endsWith(".js"));
   for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
-    const command = await import(filePath);
+    const command = await import(pathToFileURL(filePath).href);
     // Füge die Befehle zur Collection hinzu
     if ("data" in command && "execute" in command) {
       bot.commands.set(command.data.name, command);
@@ -66,7 +66,7 @@ const eventFiles = fs
 
 for (const file of eventFiles) {
   const filePath = path.join(eventsPath, file);
-  const event = await import(filePath);
+  const event = await import(pathToFileURL(filePath).href);
   bot.on(event.name, (...args) => event.execute(...args));
 }
 
