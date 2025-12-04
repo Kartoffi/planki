@@ -59,9 +59,13 @@ export async function execute(interaction) {
           reason: `Farbrolle für ${interaction.user.tag}`
         };
         if (hasColor) createData.color = color;
-        // Create role at top position
         createData.position = guild.roles.cache.size - 1;
         role = await guild.roles.create(createData);
+        await member.roles.add(role);
+        // Update role id in database
+        await db.query(`
+          UPDATE users SET color_role_id = $1 WHERE discord_id = $2;
+        `, [role.id, discordId]);
       }
     } else {
       // User has no color role yet
