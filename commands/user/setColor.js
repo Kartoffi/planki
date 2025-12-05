@@ -1,5 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { db } from '../../database.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 export const data = new SlashCommandBuilder()
   .setName('setcolor')
@@ -21,6 +23,12 @@ export async function execute(interaction) {
   const guild = interaction.guild;
   const member = interaction.member;
   const roleName = interaction.options.getString('name') || `${interaction.user.username}`;
+
+  const adventurerRole = member.roles.cache.find(role => role.id === '929694611721572363');
+
+  if (!adventurerRole && process.env.GUILD_ID === '929671105030008833') {
+    return interaction.reply({ content: 'Du musst mindestens die Abenteurer*in-Rolle haben, um deine Farbrolle zu ändern.', flags: 64 });
+  }
 
   let color = null;
   if (hexcode) {
