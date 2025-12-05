@@ -85,13 +85,16 @@ export async function execute(interaction) {
       if (!hasColor) {
         return interaction.reply({ content: 'Du hattest zuvor noch keine Farbrolle. Um eine neue Farbrolle zu erstellen, ist es erforderlich einen Hex-Code anzugeben.', flags: 64 });
       }
-      // Create new role
+      // Create new role directly under the bot's highest role
       const createData = {
         name: roleName,
         mentionable: false,
         reason: `Farbrolle für ${interaction.user.tag}`
       };
       if (hasColor) createData.color = color;
+      const botMember = guild.members.me;
+      const botHighestRole = botMember.roles.highest;
+      createData.position = botHighestRole.position - 1 > 0 ? botHighestRole.position - 1 : 1;
       role = await guild.roles.create(createData);
     }
 
