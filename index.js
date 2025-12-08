@@ -71,8 +71,17 @@ for (const file of eventFiles) {
 }
 
 // Wenn der Bot bereit ist, gebe eine Nachricht aus
-bot.once(Events.ClientReady, (readyClient) => {
+bot.once(Events.ClientReady, async (readyClient) => {
   console.log(`${readyClient.user.username} ist jetzt online!`);
+  try {
+    // Fetch all members for all guilds the bot is in
+    for (const [guildId, guild] of bot.guilds.cache) {
+      await guild.members.fetch();
+      console.log(`Alle Mitglieder für Guild ${guild.name} wurden gecached.`);
+    }
+  } catch (err) {
+    console.error('Fehler beim Cachen der Mitglieder:', err);
+  }
 });
 
 // Logge den Bot ein
