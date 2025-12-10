@@ -72,6 +72,7 @@ for (const file of eventFiles) {
 
 // Wenn der Bot bereit ist, gebe eine Nachricht aus
 bot.once(Events.ClientReady, async (readyClient) => {
+  bot.user.setPresence({ activities: [{ name: 'bewacht die Plankenburg! 🫡' }], status: 'online' });
   console.log(`${readyClient.user.username} ist jetzt online!`);
   try {
     // Fetch all members for all guilds the bot is in
