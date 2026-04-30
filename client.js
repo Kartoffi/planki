@@ -11,6 +11,14 @@ export const bot = new Client({
         GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.MessageContent
     ],
+    presence: {
+        activities: [
+            {
+                name: 'bewacht die Plankenburg! 🫡'
+            }
+        ],
+        status: 'online'
+    }
 });
 
 // Hier musst du den Bot mit deinem Token einloggen, es wird in index.js gemacht.
