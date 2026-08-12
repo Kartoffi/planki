@@ -70,4 +70,45 @@ export async function execute(member) {
             console.log(`Konnte ${user.tag} nicht kicken.`);
         }
     }
+
+    // add default roles to new member
+    const defaultRolesRes = await db.query('SELECT role_id FROM default_roles');
+    const defaultRoles = defaultRolesRes.rows.map(row => row.role_id);
+
+    for (const roleId of defaultRoles) {
+        const role = member.guild.roles.cache.get(roleId);
+        if (role) {
+            try {
+                await member.roles.add(role);
+            } catch (error) {
+                console.error(`Fehler beim Hinzufügen der Rolle ${role.name} zu ${member.user.tag}:`, error);
+
+                if (logChannel && logChannel.isTextBased()) {
+                    const embed = new EmbedBuilder()
+                        .setColor(0xff0000)
+                        .setTimestamp()
+                        .setTitle('Fehler beim Hinzufügen der Standardrolle')
+                        .setDescription(
+                            `Konnte die Rolle <@&${roleId}> nicht zu ${member.user} (${member.user.tag}) hinzufügen.`
+                        );
+
+                    logChannel.send({ embeds: [embed] });
+                }
+            }
+        } else {
+            console.warn(`Rolle mit ID ${roleId} existiert nicht auf dem Server.`);
+
+            if (logChannel && logChannel.isTextBased()) {
+                const embed = new EmbedBuilder()
+                    .setColor(0xff0000)
+                    .setTimestamp()
+                    .setTitle('Fehler beim Hinzufügen der Standardrolle - Rolle existiert nicht')
+                    .setDescription(
+                        `Die Rolle mit der ID ${roleId} existiert nicht auf diesem Server.`
+                    );
+
+                logChannel.send({ embeds: [embed] });
+            }
+        }
+    }
 }
