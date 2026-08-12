@@ -34,6 +34,14 @@ await pool.query(`
   )
 `);
 
+// create default roles table if it doesn't exist
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS default_roles (
+    id SERIAL PRIMARY KEY,
+    role_id VARCHAR NOT NULL
+  )
+`);
+
 // Add unique constraint to name in settings if it doesn't exist
 await pool.query(`
   DO $$
