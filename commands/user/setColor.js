@@ -54,7 +54,7 @@ export async function execute(interaction) {
       role = guild.roles.cache.get(dbRes.rows[0].color_role_id);
       if (role) {
         const editData = {};
-        if (hasColor) editData.color = color;
+        if (hasColor) editData.colors = { primaryColor: color };
         if (hasName) editData.name = roleName;
           // Set position directly under the bot's highest role
           const botMember = guild.members.me;
@@ -68,7 +68,7 @@ export async function execute(interaction) {
           mentionable: false,
           reason: `Farbrolle für ${interaction.user.tag}`
         };
-        if (hasColor) createData.color = color;
+        if (hasColor) createData.colors = { primaryColor: color };
           // Create role directly under the bot's highest role
           const botMember = guild.members.me;
           const botHighestRole = botMember.roles.highest;
@@ -91,7 +91,7 @@ export async function execute(interaction) {
         mentionable: false,
         reason: `Farbrolle für ${interaction.user.tag}`
       };
-      if (hasColor) createData.color = color;
+      if (hasColor) createData.colors = { primaryColor: color };
       const botMember = guild.members.me;
       const botHighestRole = botMember.roles.highest;
       createData.position = botHighestRole.position - 1 > 0 ? botHighestRole.position - 1 : 1;
