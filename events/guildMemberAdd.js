@@ -24,6 +24,23 @@ export async function execute(member) {
 
     const diffMs = Date.now() - user.createdAt.getTime();
     const accountAgeInDays = diffMs / 86400000;
+    const accountAgeInDaysFloored = Math.floor(accountAgeInDays);
+
+    const formatGermanDate = (date) => {
+        if (!date) return 'Unbekannt';
+
+        const formatted = new Intl.DateTimeFormat('de-DE', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+        }).format(date);
+
+        return `${formatted} Uhr`;
+    };
 
     if (accountAgeInDays < daysThreshold) {
 
@@ -38,20 +55,20 @@ export async function execute(member) {
         if (member.kickable) {
 
             await member.kick(
-                `Account ist nur ${accountAgeInDays.toFixed(2)} Tage alt, Schwellenwert ist ${daysThreshold} Tage.`
+                `Account ist nur ${accountAgeInDaysFloored} Tage alt, Schwellenwert ist ${daysThreshold} Tage.`
             );
 
             if (logChannel && logChannel.isTextBased()) {
                 embed
                     .setTitle('Neues Mitglied gekickt wegen jungem Account')
                     .setDescription(
-                        `Das Mitglied ${user} (${user.tag}) wurde gekickt, da sein Account nur ${accountAgeInDays.toFixed(2)} Tage alt ist.\n\nAktuelle Einstellung: ${daysThreshold} Tage`
+                        `Das Mitglied ${user} (${user.tag}) wurde gekickt, da sein Account nur ${accountAgeInDaysFloored} Tage alt ist.\n\nAktuelle Einstellung: ${daysThreshold} Tage`
                     );
 
                 logChannel.send({ embeds: [embed] });
             } else {
                 console.log(
-                    `Person ${user.tag} wurde gekickt (Account: ${accountAgeInDays.toFixed(2)} Tage alt).`
+                    `Person ${user.tag} wurde gekickt (Account: ${accountAgeInDaysFloored} Tage alt).`
                 );
             }
 
@@ -75,12 +92,18 @@ export async function execute(member) {
     const logChannel = member.guild.channels.cache.get(process.env.LOG_CHANNEL_ID);
     if (logChannel && logChannel.isTextBased()) {
         const embed = new EmbedBuilder()
-            .setColor(0x91c474)
+            .setColor(0x8fc43f)
             .setTimestamp()
+            .setAuthor({ name: member.client.user.username, iconURL: member.client.user.displayAvatarURL() })
             .setThumbnail(member.user.displayAvatarURL())
             .setTitle('Neues Mitglied beigetreten')
             .setDescription(
                 `${member.user} (${member.user.tag}) ist dem Server beigetreten.`
+            )
+            .addFields(
+                { name: 'Server beigetreten am', value: formatGermanDate(member.joinedAt), inline: false },
+                { name: 'Account erstellt am', value: formatGermanDate(member.user.createdAt), inline: true },
+                { name: 'Account Alter', value: `${accountAgeInDaysFloored} Tage`, inline: true },
             );
 
         logChannel.send({ embeds: [embed] });
