@@ -8,6 +8,33 @@ export const once = false;
 
 export async function execute(member) {
 
+    const formatAccountAge = (createdAt, now = new Date()) => {
+        if (!createdAt) return 'Unbekannt';
+
+        let years = now.getFullYear() - createdAt.getFullYear();
+        let months = now.getMonth() - createdAt.getMonth();
+        let days = now.getDate() - createdAt.getDate();
+
+        if (days < 0) {
+            months -= 1;
+            const daysInPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+            days += daysInPreviousMonth;
+        }
+
+        if (months < 0) {
+            years -= 1;
+            months += 12;
+        }
+
+        if (years < 0) {
+            years = 0;
+            months = 0;
+            days = 0;
+        }
+
+        return `${years} Jahr(e), ${months} Monat(e), ${days} Tag(e)`;
+    };
+
     const kickFreshAccountsSetting = await db.query(
         'SELECT value FROM settings WHERE setting_id = $1 AND setting_is_active = TRUE',
         ['remove_users_by_account_age']
@@ -103,7 +130,7 @@ export async function execute(member) {
             .addFields(
                 { name: 'Server beigetreten am', value: formatGermanDate(member.joinedAt), inline: false },
                 { name: 'Account erstellt am', value: formatGermanDate(member.user.createdAt), inline: true },
-                { name: 'Account Alter', value: `${accountAgeInDaysFloored} Tage`, inline: true },
+                { name: 'Account Alter', value: formatAccountAge(member.user.createdAt), inline: true },
             );
 
         logChannel.send({ embeds: [embed] });

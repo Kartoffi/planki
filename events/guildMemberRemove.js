@@ -10,6 +10,33 @@ export async function execute(member) {
     const guild = member.guild;
     const logChannel = guild.channels.cache.get(process.env.LOG_CHANNEL_ID);
 
+    const formatAccountAge = (createdAt, now = new Date()) => {
+        if (!createdAt) return 'Unbekannt';
+
+        let years = now.getFullYear() - createdAt.getFullYear();
+        let months = now.getMonth() - createdAt.getMonth();
+        let days = now.getDate() - createdAt.getDate();
+
+        if (days < 0) {
+            months -= 1;
+            const daysInPreviousMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+            days += daysInPreviousMonth;
+        }
+
+        if (months < 0) {
+            years -= 1;
+            months += 12;
+        }
+
+        if (years < 0) {
+            years = 0;
+            months = 0;
+            days = 0;
+        }
+
+        return `${years} Jahr(e), ${months} Monat(e), ${days} Tag(e)`;
+    };
+
     const formatGermanDate = (date) => {
         if (!date) return 'Unbekannt';
 
@@ -28,7 +55,6 @@ export async function execute(member) {
 
     const diffMs = Date.now() - member.user.createdAt.getTime();
     const accountAgeInDays = diffMs / 86400000;
-    const accountAgeInDaysFloored = Math.floor(accountAgeInDays);
 
     let banEntry = null;
     let kickEntry = null;
@@ -68,7 +94,7 @@ export async function execute(member) {
         const fields = [
             { name: 'Server beigetreten am', value: formatGermanDate(member.joinedAt), inline: false },
             { name: 'Account erstellt am', value: formatGermanDate(member.user.createdAt), inline: true },
-            { name: 'Account Alter', value: `${accountAgeInDaysFloored} Tage`, inline: true },
+            { name: 'Account Alter', value: formatAccountAge(member.user.createdAt), inline: true },
         ];
 
         if (isBan) {
