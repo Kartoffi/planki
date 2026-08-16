@@ -120,7 +120,7 @@ export async function execute(member) {
         }
 
         const authorUser = isBan ? banEntry?.executor : isKick ? kickEntry?.executor : member.client.user;
-        const authorName = authorUser?.tag ?? authorUser?.username ?? 'Unbekannt';
+        const authorName = authorUser?.globalName ?? authorUser?.username ?? 'Unbekannt';
         const authorIconURL = authorUser?.displayAvatarURL?.();
 
         const embed = new EmbedBuilder()

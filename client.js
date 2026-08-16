@@ -7,6 +7,7 @@ export const bot = new Client({
         GatewayIntentBits.Guilds, 
         GatewayIntentBits.GuildMessages, 
         GatewayIntentBits.GuildMessageReactions, 
+        GatewayIntentBits.GuildModeration,
         GatewayIntentBits.GuildMembers, 
         GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.MessageContent
