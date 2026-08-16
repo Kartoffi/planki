@@ -92,7 +92,7 @@ export async function execute(member) {
     const logChannel = member.guild.channels.cache.get(process.env.LOG_CHANNEL_ID);
     if (logChannel && logChannel.isTextBased()) {
         const embed = new EmbedBuilder()
-            .setColor(0x8fc43f)
+            .setColor(0x77eb34)
             .setTimestamp()
             .setAuthor({ name: member.client.user.username, iconURL: member.client.user.displayAvatarURL() })
             .setThumbnail(member.user.displayAvatarURL())
