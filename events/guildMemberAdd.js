@@ -71,6 +71,21 @@ export async function execute(member) {
         }
     }
 
+    // send notification to log channel that someone joined the server
+    const logChannel = member.guild.channels.cache.get(process.env.LOG_CHANNEL_ID);
+    if (logChannel && logChannel.isTextBased()) {
+        const embed = new EmbedBuilder()
+            .setColor(0x91c474)
+            .setTimestamp()
+            .setThumbnail(member.user.displayAvatarURL())
+            .setTitle('Neues Mitglied beigetreten')
+            .setDescription(
+                `${member.user} (${member.user.tag}) ist dem Server beigetreten.`
+            );
+
+        logChannel.send({ embeds: [embed] });
+    }
+
     // add default roles to new member
     const defaultRolesRes = await db.query('SELECT role_id FROM default_roles');
     const defaultRoles = defaultRolesRes.rows.map(row => row.role_id);
