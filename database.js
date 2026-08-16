@@ -42,6 +42,81 @@ await pool.query(`
   )
 `);
 
+// create message_triggers table if it doesn't exist
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS message_triggers (
+    id SERIAL PRIMARY KEY,
+    trigger VARCHAR NOT NULL,
+    response VARCHAR NOT NULL,
+    match_mode VARCHAR NOT NULL DEFAULT 'contains',
+    allow_inside_word BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR NOT NULL,
+    updated_at TIMESTAMP,
+    updated_by VARCHAR
+  )
+`);
+
+// add match_mode column to message_triggers if it doesn't exist
+await pool.query(`
+  DO $$
+  BEGIN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_name = 'message_triggers' AND column_name = 'match_mode'
+    ) THEN
+      ALTER TABLE message_triggers ADD COLUMN match_mode VARCHAR NOT NULL DEFAULT 'contains';
+    END IF;
+  END
+  $$;
+`);
+
+// add updated_at column to message_triggers if it doesn't exist
+await pool.query(`
+  DO $$
+  BEGIN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_name = 'message_triggers' AND column_name = 'updated_at'
+    ) THEN
+      ALTER TABLE message_triggers ADD COLUMN updated_at TIMESTAMP;
+    END IF;
+  END
+  $$;
+`);
+
+// add updated_by column to message_triggers if it doesn't exist
+await pool.query(`
+  DO $$
+  BEGIN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_name = 'message_triggers' AND column_name = 'updated_by'
+    ) THEN
+      ALTER TABLE message_triggers ADD COLUMN updated_by VARCHAR;
+    END IF;
+  END
+  $$;
+`);
+
+// add allow_inside_word column to message_triggers if it doesn't exist
+await pool.query(`
+  DO $$
+  BEGIN
+    IF NOT EXISTS (
+      SELECT 1
+      FROM information_schema.columns
+      WHERE table_name = 'message_triggers' AND column_name = 'allow_inside_word'
+    ) THEN
+      ALTER TABLE message_triggers ADD COLUMN allow_inside_word BOOLEAN NOT NULL DEFAULT FALSE;
+    END IF;
+  END
+  $$;
+`);
+
 // Add unique constraint to name in settings if it doesn't exist
 await pool.query(`
   DO $$
