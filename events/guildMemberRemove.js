@@ -91,22 +91,17 @@ export async function execute(member) {
     if (logChannel && logChannel.isTextBased()) {
         const isBan = Boolean(banEntry);
         const isKick = Boolean(kickEntry);
+
+        // Ban-Logs werden vom guildBanAdd-Event behandelt, daher hier ueberspringen.
+        if (isBan) {
+            return;
+        }
+
         const fields = [
             { name: 'Server beigetreten am', value: formatGermanDate(member.joinedAt), inline: false },
             { name: 'Account erstellt am', value: formatGermanDate(member.user.createdAt), inline: true },
             { name: 'Account Alter', value: formatAccountAge(member.user.createdAt), inline: true },
         ];
-
-        if (isBan) {
-            const moderator = banEntry.executor
-                ? `${banEntry.executor} (${banEntry.executor.tag})`
-                : 'Unbekannt';
-
-            fields.push(
-                { name: 'Gebannt von', value: moderator, inline: false },
-                { name: 'Grund', value: banEntry.reason ?? 'Kein Grund angegeben', inline: false },
-            );
-        }
 
         if (!isBan && isKick) {
             const moderator = kickEntry.executor
@@ -119,7 +114,7 @@ export async function execute(member) {
             );
         }
 
-        const authorUser = isBan ? banEntry?.executor : isKick ? kickEntry?.executor : member.client.user;
+        const authorUser = isKick ? kickEntry?.executor : member.client.user;
         const authorName = authorUser?.globalName ?? authorUser?.username ?? 'Unbekannt';
         const authorIconURL = authorUser?.displayAvatarURL?.();
 
@@ -128,11 +123,9 @@ export async function execute(member) {
             .setTimestamp()
             .setAuthor({ name: authorName, iconURL: authorIconURL })
             .setThumbnail(member.user.displayAvatarURL())
-            .setTitle(isBan ? 'Mitglied wurde gebannt' : isKick ? 'Mitglied wurde gekickt' : 'Mitglied hat den Server verlassen')
+            .setTitle(isKick ? 'Mitglied wurde gekickt' : 'Mitglied hat den Server verlassen')
             .setDescription(
-                isBan
-                    ? `${member.user} (${member.user.tag}) wurde vom Server gebannt.`
-                    : isKick
+                isKick
                     ? `${member.user} (${member.user.tag}) wurde vom Server gekickt.`
                     : `${member.user} (${member.user.tag}) hat den Server verlassen.`
             )
