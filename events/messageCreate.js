@@ -5,8 +5,32 @@ import { db } from '../database.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-function escapeRegex(value) {
-    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function isWordChar(char) {
+    return /[a-z0-9_]/i.test(char);
+}
+
+function matchesOnWordBoundaries(content, triggerText) {
+    let startIndex = content.indexOf(triggerText);
+
+    while (startIndex !== -1) {
+        const endIndex = startIndex + triggerText.length;
+        const beforeChar = startIndex > 0 ? content[startIndex - 1] : '';
+        const afterChar = endIndex < content.length ? content[endIndex] : '';
+
+        const startsWithWordChar = isWordChar(triggerText[0] || '');
+        const endsWithWordChar = isWordChar(triggerText[triggerText.length - 1] || '');
+
+        const beforeBoundaryOk = startIndex === 0 || !startsWithWordChar || !isWordChar(beforeChar);
+        const afterBoundaryOk = endIndex === content.length || !endsWithWordChar || !isWordChar(afterChar);
+
+        if (beforeBoundaryOk && afterBoundaryOk) {
+            return true;
+        }
+
+        startIndex = content.indexOf(triggerText, startIndex + 1);
+    }
+
+    return false;
 }
 
 export async function execute(message) {
@@ -27,8 +51,7 @@ export async function execute(message) {
         } else if (allowInsideWord) {
             isMatch = content.includes(triggerText);
         } else {
-            const regex = new RegExp(`\\b${escapeRegex(trigger.trigger)}\\b`, 'i');
-            isMatch = regex.test(message.content);
+            isMatch = matchesOnWordBoundaries(content, triggerText);
         }
 
         if (isMatch) {
