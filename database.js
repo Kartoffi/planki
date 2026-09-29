@@ -12,6 +12,8 @@ const pool = new Pool({
   database: process.env.PGDATABASE,
 });
 
+const defaultReminderChannelId = process.env.LOG_CHANNEL_ID || null;
+
 
 // Create users table if it doesn't exist
 await pool.query(`
@@ -54,6 +56,17 @@ await pool.query(`
     created_by VARCHAR NOT NULL,
     updated_at TIMESTAMP,
     updated_by VARCHAR
+  )
+`);
+
+// create bump_reminders table if it doesn't exist (one row per guild)
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS bump_reminders (
+    guild_id VARCHAR PRIMARY KEY,
+    channel_id VARCHAR,
+    ping_role_id VARCHAR,
+    remind_at TIMESTAMPTZ,
+    reminder_sent BOOLEAN NOT NULL DEFAULT TRUE
   )
 `);
 

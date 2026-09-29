@@ -2,6 +2,7 @@ import { bot } from "./client.js"; // Importiere den Bot-Client aus client.js
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "url";
+import { hydrateBumpReminderJobs } from "./bumpReminderScheduler.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Importiere die notwendigen discord.js Klassen
@@ -74,6 +75,8 @@ for (const file of eventFiles) {
 bot.once(Events.ClientReady, async (readyClient) => {
   console.log(`${readyClient.user.username} ist jetzt online!`);
   try {
+    await hydrateBumpReminderJobs(bot, db);
+
     // Fetch all members for all guilds the bot is in
     for (const [guildId, guild] of bot.guilds.cache) {
       await guild.members.fetch();

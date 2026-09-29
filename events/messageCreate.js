@@ -2,6 +2,7 @@ export const name = 'messageCreate';
 export const once = false;
 
 import { db } from '../database.js';
+import { isSuccessfulBumpMessage, recordBump } from '../bumpReminderScheduler.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -34,6 +35,15 @@ function matchesOnWordBoundaries(content, triggerText) {
 }
 
 export async function execute(message) {
+    if (message.guild && isSuccessfulBumpMessage(message)) {
+        try {
+            await recordBump(message, message.client, db);
+        } catch (error) {
+            console.error('Fehler beim Speichern des Bumps:', error);
+        }
+        return;
+    }
+
     if (message.author.bot) return;
 
     // check database for message trigger words
