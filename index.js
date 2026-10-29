@@ -594,12 +594,28 @@ async function checkAndPostExpiredEvents() {
 
       const totalChunks = splitText(totalText);
 
+      // Prüfen, ob nach diesem Kapitel noch Halloween-Kapitel ausstehen.
+      const remainingEvents = await db.query(`
+        SELECT COUNT(*)::INTEGER AS count
+        FROM halloween_events
+        WHERE status IN ('pending', 'processing', 'sent')
+      `);
+      const isFinalChapter = remainingEvents.rows[0].count === 0;
+      const eventFinishedDescription =
+        "Hiermit ist die Geschichte der kleinen Hexe abgeschlossen und das Event vorbei! Vielen Dank an alle, die beim Plankenburger Halloween-Event mitgemacht haben! <3 Die entsprechenden Belohnungen erhaltet ihr morgen.";
+
       // Nur das globale Gesamtergebnis posten
       for (let i = 0; i < totalChunks.length; i++) {
+        const description =
+          totalChunks[i] +
+          (isFinalChapter && i === totalChunks.length - 1
+            ? `\n\n${eventFinishedDescription}`
+            : "");
+
         const totalEmbed = new EmbedBuilder()
           .setColor("#dc6913")
           .setTitle(`🏆 Globale Halloween-Bestenliste`)
-          .setDescription(totalChunks[i])
+          .setDescription(description)
           .setFooter({ text: `Seite ${i + 1} von ${totalChunks.length}` })
           .setTimestamp();
 
