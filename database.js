@@ -294,7 +294,7 @@ await pool.query(`
   \nDas humorvolle Skelett und die mies gelaunte Fledermaus … Ob das mit den beiden wohl was werden wird?
   \nAls Startgeschenk nimmt sich jede Gruppe ein paar Bonbons und dann geht die Reise auch schon los!`,
   "🍬",
-  "2026-10-28 16:00:00"
+  "2026-10-29 19:00:00"
 ]);
 
 console.log("[HALLOWEEN] Eintrag für Kapitel 1 - Möge das Süßigkeitensammeln beginnen! wurde gespeichert.");
@@ -314,7 +314,7 @@ await pool.query(`
   \n*„Kann man nichts machen, guck dir doch an wie erfolglos wir bisher sind, ist doch alles total hoffnungslos. Wir sind wohl dazu bestimmt zu versagen …“*, kommentiert die Fledermaus emotionslos. *„Mit dieser Einstellung willst du Scraff-o-Lantern später entgegentreten? Zeig mal ein bisschen mehr Kampfgeist!“*, entgegnet die kleine Hexe. *„Wir schaffen das schon! Vielleicht wird es nicht ganz so einfach, aber wir dürfen nicht direkt schon so einfach aufgeben!“*, entgegnet sie energisch. *„Ist schon echt ein Knochenjob, aber dafür bin ich ja genau der Richtige!“*, protzt das Skelett. Die kleine Hexe reagiert auf seine Bemerkung mit einem leichten Seufzer und schaute dabei zu Boden. 
   \nDa bemerkt sie ein paar Meter vor sich auf einmal ein paar Lollipops, die auf den Boden verstreut liegen. *„Hey Jungs, schaut mal! Glück im Unglück!“* Schnell beugen sie sich runter und greifen nach den Leckereien.`,
   "🍭",
-  "2026-10-28 17:00:00"
+  "2026-10-29 19:30:00"
 ]);
 
 console.log("[HALLOWEEN] Eintrag für Kapitel 2 - Verwirrung wurde gespeichert.");
@@ -334,7 +334,7 @@ await pool.query(`
   \nEine andere Gruppe taucht auf, es spricht ein Zombie-Junge. *„Wir haben gesehen, wie die Unruhestifter gerade in diese Straße abgebogen sind, vielleicht könnt ihr sie noch einholen, wir verfolgen sie die ganze Zeit erfolglos.“* *„Nimm's mir nicht krumm, aber bei deinem Schneckentempo wundert mich das nicht, Kumpel“*, scherzte das Skelett und bezieht sich dabei auf das Klischee, dass Zombies alle sehr langsam unterwegs seien. Der Zombiejunge lacht darüber sogar, aber die kleine Hexe will sich nicht länger mit so einem Unsinn aufhalten lassen. *„Danke dir für die Auskunft! Wir werden sie verfolgen!“* *„Moment!“*, ruft der Hausherr ihnen plötzlich hinterher.
   \n*„Ich habe in der hintersten Ecke eines Küchenschrankes noch etwas Schokolade gefunden, die könnt ihr haben.“* Die Gruppe der Hexe nimmt dankend die Schokolade an sich und macht sich auf die Suche nach den Unruhestiftern.`,
   "🍫",
-  "2026-10-28 18:00:00"
+  "2026-10-29 20:00:00"
 ]);
 
 console.log("[HALLOWEEN] Eintrag für Kapitel 3 - Vermutung wurde gespeichert.");
@@ -355,7 +355,7 @@ await pool.query(`
   \n*„Ah-HAH! Ich wusste, da stimmt irgendwas nicht!“*, ruft sie triumphierend. *„Es wird Zeit, dass wir die Gruppe ein für alle Mal aufhalten, nicht wahr, Jungs?“* Das Skelett und die Fledermaus wirken nicht so überzeugt, aber das entgeht der Hexe.
   \n*„Bevor ihr aufbrecht, wollten wir uns erkenntlich zeigen: Hier, nehmt ein paar unserer Donuts! Viel Glück, wir drücken euch die Daumen!“* Die Heldengruppe bedankt sich bei den Mäusen, anschließend ziehen sie weiter.`,
   "🍩",
-  "2026-10-28 19:00:00"
+  "2026-10-29 20:30:00"
 ]);
 
 console.log("[HALLOWEEN] Eintrag für Kapitel 4 - Geheimnis gelüftet wurde gespeichert.");
@@ -379,10 +379,55 @@ await pool.query(`
   \n*„Zeig mal das Knie. Ich muss zwar noch einiges lernen, aber die kleine Wunde sollte ich mit meiner Magie heilen können.“* Sie hält ihre Hände über das Knie des Vampirjungen, die Augen geschlossen, einen Zauber murmelnd, und schon ist das Knie verheilt. *„Oh danke dir, kleine Hexe! Es ist schön zu sehen, dass es auch so nette und hilfsbereite Kinder wie dich gibt!“*, sagt die Mutter strahlend. Der kleine Vampirjunge schaut bewundernd zu ihr hoch. *„Danke, Hexe, ich fühle mich jetzt viel besser!“*
   \nDie Mutter streckt ihr ein paar Kekse hin. *„Hier, nimm! Das ist das Mindeste, was ich tun kann. Ich wünsche dir viel Erfolg beim Süßigkeitensammeln!“* Die kleine Hexe bedankt sich herzlich bei der Mutter und zieht weiter auf der Suche nach den Unruhestiftern.`,
   "🍪",
-  "2026-10-28 20:00:00"
+  "2026-10-29 21:00:00"
 ]);
 
-  console.log("[HALLOWEEN] Eintrag für Kapitel 5 - Getrennte Wege wurde gespeichert.");
+console.log("[HALLOWEEN] Eintrag für Kapitel 5 - Getrennte Wege wurde gespeichert.");
+
+await pool.query(`
+  INSERT INTO halloween_events (
+    title,
+    message,
+    reaction_emoji,
+    posting_interval_start
+  )
+  VALUES ($1, $2, $3, $4)
+`, [
+  "Kapitel 6 - Heldengruppe VS. Unruhestifter",
+  `Ohne weitere Anhaltspunkte fällt es der Hexe schwer, die Unruhestifter-Gruppe aufzuspüren. Ziellos streift sie eine Weile durch die Gegend, ohne Erfolg. Ihr kommt kurz der Gedanke, dass das Skelett und die Fledermaus gar nicht so im Unrecht waren. Diesen Gedanken schüttelt sie jedoch schnell wieder ab. Irgendjemand muss etwas gegen die Unruhestifter unternehmen, so viel steht fest!\n
+Kurze Zeit später findet sie sich in einer sehr dunklen Gasse wieder. So ganz alleine ist es schon sehr unheimlich, an so verlassenen Orten unterwegs zu sein, weshalb sie schnell wieder umdreht, als sie auf dem Boden etwas aufblitzen sieht. Da liegen doch tatsächlich haufenweise Bonbons auf dem Boden. Wie kommen die denn da hin? Neugierig beugt sich die Hexe hinunter, als sie plötzlich merkt, wie ihr kräftig in den Rücken getreten wird, woraufhin sie hinfällt. Sie blickt auf und schaut in die Gesichter der Unruhestifter. \*„Na, wen haben wir denn da? Die kleine Hexe alleine unterwegs? Ohne ihre treuen Freunde? Haben die auch langsam gemerkt, dass sie es mit uns niemals aufnehmen können?“\*, fragt die Schlange belustigt.\n
+Das war's dann wohl, denkt sich die Hexe. Dann muss sie an die Kinder denken, die von den dreien gepiesackt wurden, und fasst neuen Mut. \*„Das hättet ihr wohl gerne, was?“\*, ruft die kleine Hexe angriffslustig und kommt langsam wieder auf die Beine. \*„Ihr werdet eure gerechte Strafe bekommen, dafür sorge ich!“\*\n
+Sie erntet tosendes Gelächter von der Unruhestifter-Gruppe. \*„Das glaubst du ja wohl selber nicht, Kleine!“\*, lacht die Spinne, die sich kaum noch vor Lachen einkriegt. Das Lachen vergeht der Spinne jedoch schnell, als sie gegen die Wand geschleudert wird. Zur großen Überraschung der kleinen Hexe ist es die Fledermaus, die die Spinne an der Wand festhält, während das Skelett die Ratte im Schwitzkasten hat. \*„Was denkt ihr, was ihr da mit unserer Freundin macht!?“\*, schreit das Skelett verärgert. \*„Verzieht euch gefälligst!“\*\n
+Das lassen sich die Unruhestifter nicht zweimal sagen. Geschockt von dem plötzlichen Überfall des Skeletts und der Fledermaus suchen sie schnell das Weite.\n
+\*„Verdammt, diese hinterlistige Schlange hat es natürlich trotzdem geschafft, die ganzen Süßigkeiten mitgehen zu lassen ...“\*, seufzt die Fledermaus. \*„Ach, wen interessiert das überhaupt noch? Ich bin froh, dass es euch gut geht!“\*, weint die kleine Hexe. \*„Dass es UNS gut geht? Machst du Witze? Überlass’ die lieber mir. Wir haben uns solche Sorgen um dich gemacht! Zum Glück geht es dir gut“\*, erwidert das Skelett erleichtert. \*„Kommt, es ist langsam Zeit, zum Marktplatz zurückzukehren.“\* Sie heben die wenigen Bonbons vom Boden auf, die selbst die Schlange in der Eile nicht alle aufsammeln konnte.`,
+  "🍬",
+  "2026-10-29 21:30:00"
+]);
+
+console.log("[HALLOWEEN] Eintrag für Kapitel 6 - Heldengruppe VS. Unruhestifter wurde gespeichert.");
+
+await pool.query(`
+  INSERT INTO halloween_events (
+    title,
+    message,
+    reaction_emoji,
+    posting_interval_start
+  )
+  VALUES ($1, $2, $3, $4)
+`, [
+  "Kapitel 7 - Finale",
+  `Mit leeren Händen macht sich die niedergeschlagene Gruppe der kleinen Hexe auf den Weg zurück zum Marktplatz. Dort warten bereits unzählige Kinder und Scraff-o-Lantern. Nach kurzer Zeit sind alle Kinder anwesend, und so spricht Scraff-o-Lantern. \*„Liebe Kinder, ich bedanke mich bei euch allen für eure Gaben! Hiermit verkünde ich die Siegergruppe für dieses Jahr! Es gewinnt die Gruppe der Schlange, Ratte und Spinne!“\*\n
+\*„Augenblick mal!“\*, ruft eine Frau in der Menge. Die kleine Hexe erkennt sie sofort wieder: Es handelt sich dabei um die Mutter des kleinen Vampirjungen. \*„Ich bitte um eine genauere Überprüfung der Ergebnisse! Mein Junge wurde von dieser Gruppe bestohlen! Sie haben ihm Süßigkeiten weggenommen und ihn verletzt! Das Ergebnis akzeptiere ich nicht!“\*, tobt sie vor Wut. \*„Wir lehnen die Gruppe ebenfalls als Sieger ab!“\*, stimmt der Zombie-Junge der Vampirfrau zu. \*„Schon von Anfang an gab es kaum Süßigkeiten aus den Häusern mehr zu holen, und die Gruppe der Schlange hat sich sehr verdächtig verhalten. Ich bin mir sicher, die stecken auch dahinter.“\* In der Menge brechen Gemurmel und Verwirrung aus. \*„Hmmmm ... eine sehr schwierige Situation allerdings“\*, grübelt Scraff-o-Lantern. \*„Aber ohne Beweise oder Zeugen wird es schwierig, die Gruppe zu disqualifizieren.“\* \*„Es gibt Zeugen! Wir haben es beobachtet! Wir haben gesehen, wie sie aus den Häusern die Süßigkeiten leergeräumt haben, während die Bewohner abgelenkt waren“\*, piepst eine der Drillingsmäuse. \*„Sie haben uns sogar bedroht und wollten uns auch alle Süßigkeiten wegnehmen, aber zum Glück kam die Gruppe der kleinen Hexe uns zur Hilfe und hat die Gruppe in die Flucht geschlagen.“\*\n
+Alle drehen sich zur Gruppe der kleinen Hexe herum. \*„Stimmt, die Gruppe der kleinen Hexe wollte auch den Unruhestiftern hinterher, um sie zur Rechenschaft zu ziehen“\*, bestätigt der Zombie-Junge. \*„Oh, die kleine Hexe war so hilfreich! Sie hat die Wunden meines Sohnes geheilt, die ihm die Unruhestifter-Gruppe zugefügt hat!“\*, lobt die Vampirmutter die kleine Hexe, die sofort vor Bescheidenheit rot anläuft.\n
+\*„Ja, das Süßigkeitensammeln wurde für die kleine Hexe zu einer Nebensächlichkeit, als sie gemerkt hat, dass es hier nicht fair zugeht“\*, äußert das Skelett ernst. Die kleine Hexe ist überrascht. Sein Verhalten ist sehr ungewöhnlich. Vielleicht ist er doch kein so übler Typ, wie sie immer gedacht hat. Zu ihrer noch größeren Verwunderung meldet sich auch die Fledermaus zu Wort: \*„Ich kann dem Skelett nur zustimmen: Sie hat sich sehr für die Kinder eingesetzt, die von der Gruppe belästigt wurden, und ist der Gruppe hinterher, um sie zur Rede zu stellen und aufzuhalten.“\*\n
+\*„Ach, das spielt doch alles überhaupt keine Rolle!“\*, ruft die Schlange ungeduldig. \*„Das, was zählt, ist doch, dass meine Gruppe die meisten Süßigkeiten gesammelt hat!“\* Da mischen sich die Kinder ein, die von der Gruppe belästigt wurden. \*„Wir schenken unsere gesamten Süßigkeiten gerne der Hexengruppe!“\*, beschließen sie. \*„Haha, dafür ist es doch schon viel zu spät, wir haben schon gewonnen!“\*, schreit die Ratte triumphierend.\n
+\*„Tut mir leid, Jungs, aber so viel Fehlverhalten kann ich euch leider nicht durchgehen lassen“\*, sagt Scraff-o-Lantern. \*„Eure Gruppe ist hiermit ohnehin disqualifiziert, und ich akzeptiere, dass die Freunde der kleinen Hexe ihrer Gruppe die Süßigkeiten schenken. Damit hat die Gruppe der kleinen Hexe gewonnen. Herzlichen Glückwunsch!“\*\n
+Tosender Jubel bricht aus, und die Gruppe der kleinen Hexe feiert zusammen mit ihren neuen Freunden den großen Sieg! Und, was ihr noch viel wichtiger ist, sie feiert den Triumph darüber, dass die Unruhestifter ihr wohlverdientes Karma erhalten haben. Auf der Feier im Anschluss gönnen sich die Kinder einige Cupcakes zur Feier des Tages.`,
+  "🧁",
+  "2026-10-29 22:00:00"
+]);
+
+console.log("[HALLOWEEN] Eintrag für Kapitel 7 - Finale wurde gespeichert.");
 
   
 
