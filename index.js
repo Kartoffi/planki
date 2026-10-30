@@ -25,6 +25,35 @@ const HALLOWEEN_CHANNEL_ID = process.env.HALLOWEEN_CHANNEL_ID;
 const HALLOWEEN_TIMEZONE = "Europe/Berlin";
 const HALLOWEEN_INTERVAL_MS = 30 * 60 * 1000;
 const HALLOWEEN_REACTION_WINDOW_MS = 15 * 60 * 1000;
+const HALLOWEEN_CANDY_CHANNEL_IDS = (process.env.HALLOWEEN_CANDY_CHANNEL_IDS || "")
+  .split(",")
+  .map((id) => id.trim())
+  .filter(Boolean);
+const HALLOWEEN_CANDY_EMOJI = "🍬";
+const HALLOWEEN_CANDY_AMOUNT = 5;
+const HALLOWEEN_CANDY_SCENARIOS = [
+  `Eine kleine Fledermaus flattert aufgeregt durch das Gruselreich. In ihren Krallen baumelt ein prall gefüllter Süßigkeitenbeutel! Doch plötzlich verliert sie den Halt und die Leckereien purzeln durch die Luft.
+  \n*Wer schnappt sich die Süßigkeiten, bevor sie auf dem Boden landen?*`,
+  `Ein kleiner Geist huscht durch die Nacht und lässt dabei einen Beutel voller Süßigkeiten fallen. Die Leckereien rollen über den Boden, und es liegt an dir, sie schnell aufzusammeln.
+  \n*Wer ist flink genug, um die Süßigkeiten zu ergattern, bevor sie verschwinden?*`,
+  `Die alte Hexe Griselda hat sich beim Zaubertrankbrauen vertan. Statt eines mächtigen Elixiers blubbern plötzlich Dutzende Schokoladenkugeln aus ihrem Kessel! Sie kullern in alle Richtungen davon.
+  \n*Wer ist schnell genug, um sich eine Handvoll zu sichern?*`,
+  `Ein Skelett stolpert über seine eigenen Knochen und verliert dabei einen Beutel voller Süßigkeiten. Die Leckereien verteilen sich über den Friedhof, während das Skelett verwirrt versucht, seinen Schädel wiederzufinden.
+  \n*Wer sammelt die Beute ein, bevor das Skelett sie bemerkt?*`,
+  `Eine riesige Spinne hat ihr Netz quer über einen schmalen Pfad gespannt. Darin hängen keine Fliegen, sondern glänzende Bonbons und Schokoladenstücke! Die Spinne scheint gerade ein Nickerchen zu machen.
+  \n*Wer traut sich, die süße Beute aus dem Netz zu stibitzen?*`,
+  `Graf Blutmund hat einen fürchterlichen Heißhunger. Doch statt Blut verlangt er heute nach Kirschlutschern! Bei seiner nächtlichen Jagd hat er einen ganzen Sack davon verloren.
+  \n*Wer findet den Sack, bevor Graf Blutmund zurückkehrt?*`,
+  `Eine Horde frecher Ratten hat einen Süßigkeitenwagen überfallen. Nun schleppen sie ihre Beute durch die dunklen Gassen des Gruselreichs. Eine der Ratten ist allerdings etwas zu gierig und lässt ständig Leckereien fallen.
+  \n*Wer ist flink genug, um die verlorenen Süßigkeiten einzusammeln?*`,
+  `Mitten auf dem Friedhof beginnt ein alter Grabstein zu wackeln. Plötzlich öffnet sich darunter ein kleines Fach, aus dem ein verstaubter Süßigkeitenvorrat hervorquillt. Offenbar hat hier jemand seine Halloween-Beute versteckt.
+  \n*Wer plündert das Grab, bevor es sich wieder schließt?*`,
+  `Graf Blutmund sitzt in seinem Schloss und genießt einen Kirschlutscher nach dem anderen. Doch sein Vorrat geht langsam zur Neige. Wütend schickt er seine Dienerschaft los, um Nachschub zu besorgen. Dabei bleibt ein ganzer Sack unbeaufsichtigt im Schlosshof zurück.
+  \n*Wer schleicht sich an und schnappt sich die Leckereien?*`,
+  `Ein fernes Grollen hallt durch das Gruselreich. Der große Scraff-o-Lantern scheint wieder hungrig zu sein! Seine Diener haben bereits einige Süßigkeiten bereitgelegt, doch ein frecher kleiner Kobold hat sich daran zu schaffen gemacht und alles durcheinandergeworfen.
+  \n*Wer rettet die Süßigkeiten und bringt sie dem großen Scraff-o-Lantern?*`
+];
+let halloweenCandyPostRunning = false;
 
 // Verhindert parallele Scheduler-Ausführungen im selben Prozess.
 let halloweenSchedulerRunning = false;
@@ -297,6 +326,88 @@ async function sendHalloweenEvents() {
 }
 
 // --------------------------------------------------
+// HALLOWEEN: ZUFÄLLIGE SÜSSIGKEITEN-SZENARIEN
+// --------------------------------------------------
+
+async function postHalloweenCandyScenario() {
+  if (halloweenCandyPostRunning || HALLOWEEN_CANDY_CHANNEL_IDS.length === 0) return;
+  halloweenCandyPostRunning = true;
+
+  try {
+    const scenario = HALLOWEEN_CANDY_SCENARIOS[
+      Math.floor(Math.random() * HALLOWEEN_CANDY_SCENARIOS.length)
+    ];
+    const channelId = HALLOWEEN_CANDY_CHANNEL_IDS[
+      Math.floor(Math.random() * HALLOWEEN_CANDY_CHANNEL_IDS.length)
+    ];
+    const channel = await bot.channels.fetch(channelId);
+
+    if (!channel || !channel.isSendable()) {
+      console.error(`[Halloween Süßigkeiten] Channel ${channelId} nicht gefunden oder nicht beschreibbar.`);
+      return;
+    }
+
+    const message = await channel.send({
+      embeds: [
+        new EmbedBuilder()
+          .setColor("#ea8317")
+          .setTitle("🍬 Mini-Süßigkeiten-Event")
+          .setDescription(`${scenario}\n\n**Reagiere mit ${HALLOWEEN_CANDY_EMOJI} und sichere dir vor allen anderen ${HALLOWEEN_CANDY_AMOUNT} Süßigkeiten!**`)
+          .setTimestamp(),
+      ],
+      allowedMentions: { parse: [] },
+    });
+
+    await db.query(
+      `INSERT INTO halloween_candy_scenarios (discord_message_id, channel_id, scenario_text) VALUES ($1, $2, $3)`,
+      [message.id, channelId, scenario]
+    );
+    await message.react(HALLOWEEN_CANDY_EMOJI);
+    console.log(`[Halloween Süßigkeiten] Szenario in Channel ${channelId} gepostet.`);
+  } catch (error) {
+    console.error("[Halloween Süßigkeiten] Fehler beim Posten des Szenarios:", error);
+  } finally {
+    halloweenCandyPostRunning = false;
+  }
+}
+
+async function processHalloweenCandyReaction(reaction, user) {
+  if (user.bot) return false;
+  if (reaction.partial) await reaction.fetch();
+  const message = reaction.message;
+  if (!message?.id) return false;
+
+  const scenarioResult = await db.query(
+    `SELECT id, winner_discord_id FROM halloween_candy_scenarios WHERE discord_message_id = $1 LIMIT 1`,
+    [message.id]
+  );
+  if (scenarioResult.rowCount === 0) return false;
+  if (reaction.emoji.name !== HALLOWEEN_CANDY_EMOJI) return true;
+
+  // Atomare Vergabe: Nur ein Nutzer kann den noch freien Gewinn beanspruchen.
+  const winnerResult = await db.query(
+    `UPDATE halloween_candy_scenarios SET winner_discord_id = $2, won_at = NOW() WHERE id = $1 AND winner_discord_id IS NULL RETURNING id`,
+    [scenarioResult.rows[0].id, user.id]
+  );
+
+  if (winnerResult.rowCount === 0) return true;
+
+  try {
+    const originalEmbed = message.embeds?.[0];
+    if (originalEmbed) {
+      const updatedEmbed = EmbedBuilder.from(originalEmbed)
+        .setDescription(`${originalEmbed.description || ""}\n\n🏆 <@${user.id}> war am schnellsten und erhält **${HALLOWEEN_CANDY_AMOUNT} Süßigkeiten**!`)
+      await message.edit({ embeds: [updatedEmbed] });
+    }
+  } catch (error) {
+    console.error("[Halloween Süßigkeiten] Gewinnmeldung konnte nicht aktualisiert werden:", error);
+  }
+
+  console.log(`[Halloween Süßigkeiten] ${user.tag || user.id} erhält ${HALLOWEEN_CANDY_AMOUNT} Süßigkeiten.`);
+  return true;
+}
+
+// --------------------------------------------------
 // HALLOWEEN: EMOJI VERGLEICHEN
 // --------------------------------------------------
 
@@ -549,12 +660,19 @@ async function checkAndPostExpiredEvents() {
       // 3. GLOBALE GESAMTLISTE ERMITTELN
       const totalLeaderboard = await db.query(
         `
-          WITH totals AS (
+          WITH all_sweets AS (
+            SELECT discord_id, collected_sweets_amount AS sweets, time AS collected_at
+            FROM halloween_event_users
+            UNION ALL
+            SELECT winner_discord_id AS discord_id, ${HALLOWEEN_CANDY_AMOUNT} AS sweets, won_at AS collected_at
+            FROM halloween_candy_scenarios
+            WHERE winner_discord_id IS NOT NULL
+          ), totals AS (
             SELECT
               discord_id,
-              SUM(collected_sweets_amount)::INTEGER AS total_sweets,
-              MIN(time) AS first_collection
-            FROM halloween_event_users
+              SUM(sweets)::INTEGER AS total_sweets,
+              MIN(collected_at) AS first_collection
+            FROM all_sweets
             GROUP BY discord_id
           )
           SELECT
@@ -633,7 +751,10 @@ async function checkAndPostExpiredEvents() {
 // Reaktionen sequenziell verarbeiten
 bot.on(Events.MessageReactionAdd, (reaction, user) => {
   halloweenReactionQueue = halloweenReactionQueue
-    .then(() => processHalloweenReaction(reaction, user))
+    .then(async () => {
+      const isCandyScenario = await processHalloweenCandyReaction(reaction, user);
+      if (!isCandyScenario) await processHalloweenReaction(reaction, user);
+    })
     .catch((error) => {
       console.error("[Halloween] Fehler bei der Reaktionsverarbeitung:", error);
     });
@@ -676,6 +797,30 @@ bot.once(Events.ClientReady, async (readyClient) => {
     );
 
     console.log("[Halloween] Cronjob gestartet.");
+
+    if (HALLOWEEN_CANDY_CHANNEL_IDS.length > 0) {
+      const postCandyScenario = () => {
+        postHalloweenCandyScenario().catch((error) => {
+          console.error("[Halloween Süßigkeiten] Scheduler-Fehler:", error);
+        });
+      };
+
+      // Nur am 31. Oktober 2026 (Europe/Berlin):
+      // cron.schedule jeweils zur vollen und halben Stunde von 17 bis 23 Uhr.
+      cron.schedule("30 17-23 31 10 *", postCandyScenario, {
+        timezone: HALLOWEEN_TIMEZONE,
+        noOverlap: true,
+      });
+
+      cron.schedule("0 17-23 31 10 *", postCandyScenario, {
+        timezone: HALLOWEEN_TIMEZONE,
+        noOverlap: true,
+      });
+
+      console.log("[Halloween Süßigkeiten] Scheduler gestartet (31.10., 17:00–23:00 Uhr, Europe/Berlin).");
+    } else {
+      console.warn("[Halloween Süßigkeiten] Keine Channel-IDs konfiguriert; setze HALLOWEEN_CANDY_CHANNEL_IDS in der .env.");
+    }
 
     for (const [guildId, guild] of bot.guilds.cache) {
       await guild.members.fetch();
