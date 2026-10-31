@@ -1,3 +1,4 @@
+import "./logger.js";
 import { bot } from "./client.js";
 import fs from "node:fs";
 import path from "node:path";

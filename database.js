@@ -507,4 +507,9 @@ const db = new Client({
 
 await db.connect();
 
+// PostgreSQL Client-Fehler ebenfalls im zentralen Fehlerprotokoll erfassen.
+db.on("error", (error) => {
+  console.error("[DATABASE] Unerwarteter PostgreSQL-Clientfehler:", error);
+});
+
 export { db };
