@@ -87,24 +87,6 @@ await pool.query(`
 
 
 // ========================================
-// HALLOWEEN EVENT USERS
-// ========================================
-
-await pool.query(`
-  CREATE TABLE IF NOT EXISTS halloween_event_users (
-    id SERIAL PRIMARY KEY,
-    discord_id VARCHAR(255) NOT NULL,
-    event_id INT NOT NULL
-      REFERENCES halloween_events(id)
-      ON DELETE CASCADE,
-    time TIMESTAMP,
-    collected_sweets_amount INTEGER NOT NULL DEFAULT 0,
-    CONSTRAINT halloween_event_users_unique
-      UNIQUE (discord_id, event_id)
-  )
-`);
-
-// ========================================
 // HALLOWEEN EVENTS TABELLE
 // ========================================
 
@@ -151,6 +133,24 @@ await pool.query(`
 await pool.query(`
   ALTER TABLE halloween_events
   ALTER COLUMN message TYPE VARCHAR(5000)
+`);
+
+// ========================================
+// HALLOWEEN EVENT USERS
+// ========================================
+
+await pool.query(`
+  CREATE TABLE IF NOT EXISTS halloween_event_users (
+    id SERIAL PRIMARY KEY,
+    discord_id VARCHAR(255) NOT NULL,
+    event_id INT NOT NULL
+      REFERENCES halloween_events(id)
+      ON DELETE CASCADE,
+    time TIMESTAMP,
+    collected_sweets_amount INTEGER NOT NULL DEFAULT 0,
+    CONSTRAINT halloween_event_users_unique
+      UNIQUE (discord_id, event_id)
+  )
 `);
 
 // ========================================
@@ -506,10 +506,5 @@ const db = new Client({
 });
 
 await db.connect();
-
-// PostgreSQL Client-Fehler ebenfalls im zentralen Fehlerprotokoll erfassen.
-db.on("error", (error) => {
-  console.error("[DATABASE] Unerwarteter PostgreSQL-Clientfehler:", error);
-});
 
 export { db };
